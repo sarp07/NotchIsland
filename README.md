@@ -9,6 +9,10 @@
   Works on Macs without a notch too.
 </p>
 
+<p align="center">
+  <a href="https://github.com/sarp07/NotchIsland/releases/latest/download/NotchIsland.zip"><img src="https://img.shields.io/badge/Download%20for%20macOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download NotchIsland for macOS" height="44"></a>
+</p>
+
 <p align="center"><b>English</b> · <a href="README.tr.md">Türkçe</a></p>
 
 ---
@@ -36,7 +40,7 @@ Requirements: a Mac with **Apple Silicon** (M1 or newer) and **macOS 14** or lat
 
 ### Option 1: Download (easiest)
 
-1. Download `NotchIsland.zip` from [Releases](../../releases/latest) and unzip it.
+1. [**Download NotchIsland.zip**](https://github.com/sarp07/NotchIsland/releases/latest/download/NotchIsland.zip) and unzip it.
 2. Drag `NotchIsland.app` into **Applications** and open it.
 
 The app is signed and notarized by Apple, so it opens like any other app.

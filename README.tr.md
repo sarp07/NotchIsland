@@ -9,6 +9,10 @@
   Çentiği olmayan Mac'lerde de çalışır.
 </p>
 
+<p align="center">
+  <a href="https://github.com/sarp07/NotchIsland/releases/latest/download/NotchIsland.zip"><img src="https://img.shields.io/badge/macOS%20i%C3%A7in%20indir-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS için NotchIsland'ı indir" height="44"></a>
+</p>
+
 <p align="center"><a href="README.md">English</a> · <b>Türkçe</b></p>
 
 ---
@@ -36,7 +40,7 @@ Gereksinimler: **Apple Silicon** (M1 veya daha yeni) bir Mac ve **macOS 14** ya 
 
 ### Yöntem 1: İndir (en kolayı)
 
-1. [Releases](../../releases/latest) sayfasından `NotchIsland.zip` dosyasını indir ve aç.
+1. [**NotchIsland.zip dosyasını indir**](https://github.com/sarp07/NotchIsland/releases/latest/download/NotchIsland.zip) ve aç.
 2. `NotchIsland.app` dosyasını **Uygulamalar** klasörüne sürükle ve aç.
 
 Uygulama Apple tarafından imzalanmış ve onaylanmıştır (notarized). Diğer uygulamalar gibi doğrudan açılır.
