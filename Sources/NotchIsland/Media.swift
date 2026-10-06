@@ -361,10 +361,10 @@ final class BrowserProvider {
         return nil
     }
 
-    /// "Song - YouTube Music" / "Song • Artist - YouTube Music"; plain "YouTube Music" means nothing loaded.
+    /// "Song | YouTube Music" (also "-" / "–" variants); plain "YouTube Music" means nothing loaded.
     static func parseYouTubeMusic(_ title: String) -> NowPlaying? {
         var t = title.trimmingCharacters(in: .whitespaces)
-        for suffix in [" - YouTube Music", " – YouTube Music"] where t.hasSuffix(suffix) {
+        for suffix in [" | YouTube Music", " - YouTube Music", " – YouTube Music"] where t.hasSuffix(suffix) {
             t = String(t.dropLast(suffix.count))
         }
         guard !t.isEmpty, t != "YouTube Music" else { return nil }

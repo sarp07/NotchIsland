@@ -6,6 +6,7 @@ final class Settings: ObservableObject {
     private let d = UserDefaults.standard
 
     @Published var hoverToExpand: Bool { didSet { d.set(hoverToExpand, forKey: "hoverToExpand") } }
+    @Published var hideMenuBarOnHover: Bool { didSet { d.set(hideMenuBarOnHover, forKey: "hideMenuBarOnHover") } }
     @Published var showMedia: Bool { didSet { d.set(showMedia, forKey: "showMedia") } }
     @Published var browserMedia: Bool { didSet { d.set(browserMedia, forKey: "browserMedia") } }
     @Published var showHUD: Bool { didSet { d.set(showHUD, forKey: "showHUD") } }
@@ -22,11 +23,12 @@ final class Settings: ObservableObject {
 
     private init() {
         d.register(defaults: [
-            "hoverToExpand": true, "showMedia": true, "browserMedia": true, "showHUD": true,
+            "hoverToExpand": true, "hideMenuBarOnHover": true, "showMedia": true, "browserMedia": true, "showHUD": true,
             "replaceSystemHUD": true, "showNotifications": true, "showBattery": true, "showDevices": true,
             "showOnNonNotch": true, "alwaysShowPill": true, "preferBuiltInDisplay": true,
         ])
         hoverToExpand = d.bool(forKey: "hoverToExpand")
+        hideMenuBarOnHover = d.bool(forKey: "hideMenuBarOnHover")
         showMedia = d.bool(forKey: "showMedia")
         browserMedia = d.bool(forKey: "browserMedia")
         showHUD = d.bool(forKey: "showHUD")

@@ -19,7 +19,9 @@ cp "$BIN" "$APP/Contents/MacOS/NotchIsland"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 
-codesign --force --options runtime --timestamp=none \
+TIMESTAMP=--timestamp=none
+[[ "${SIGN_IDENTITY:-}" == Developer\ ID* ]] && TIMESTAMP=--timestamp
+codesign --force --options runtime "$TIMESTAMP" \
   --entitlements Resources/NotchIsland.entitlements \
   --sign "${SIGN_IDENTITY:--}" "$APP"
 

@@ -7,6 +7,7 @@ struct SettingsView: View {
         Form {
             Section(L.t("Genel", "General")) {
                 Toggle(L.t("Üzerine gelince genişlet", "Expand on hover"), isOn: $s.hoverToExpand)
+                Toggle(L.t("Ada açıkken menü çubuğunu gizle", "Hide the menu bar while the island is open"), isOn: $s.hideMenuBarOnHover)
                 Toggle(L.t("Girişte başlat", "Launch at login"), isOn: Binding(get: { s.launchAtLogin }, set: { s.launchAtLogin = $0 }))
                 Toggle(L.t("Dahili ekranı tercih et", "Prefer built-in display"), isOn: $s.preferBuiltInDisplay)
             }
