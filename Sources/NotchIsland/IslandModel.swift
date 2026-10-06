@@ -50,6 +50,7 @@ struct Banner: Equatable {
     var tint: Color = .white
     var title: String
     var subtitle: String
+    var action: (() -> Void)?
 
     static func == (a: Banner, b: Banner) -> Bool { a.id == b.id }
 }
@@ -109,6 +110,11 @@ final class IslandModel: ObservableObject {
         }
     }
 
+    func dismissTransient() {
+        transientGeneration += 1
+        transient = nil
+    }
+
     var state: DisplayState {
         switch transient {
         case .hud(let k, let v, let m): return .hud(k, v, m)
@@ -126,7 +132,7 @@ final class IslandModel: ObservableObject {
         case .hidden, .idle: return n
         case .music: return CGSize(width: n.width + 92, height: n.height)
         case .hud: return CGSize(width: max(n.width + 110, 300), height: n.height + 38)
-        case .banner: return CGSize(width: max(n.width + 170, 360), height: n.height + 60)
+        case .banner: return CGSize(width: max(n.width + 200, 400), height: n.height + 66)
         case .expanded: return CGSize(width: max(n.width + 280, 480), height: n.height + 128)
         }
     }

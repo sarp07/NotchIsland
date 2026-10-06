@@ -12,6 +12,8 @@ final class Settings: ObservableObject {
     @Published var showHUD: Bool { didSet { d.set(showHUD, forKey: "showHUD") } }
     @Published var replaceSystemHUD: Bool { didSet { d.set(replaceSystemHUD, forKey: "replaceSystemHUD") } }
     @Published var showNotifications: Bool { didSet { d.set(showNotifications, forKey: "showNotifications") } }
+    @Published var mirrorNotifications: Bool { didSet { d.set(mirrorNotifications, forKey: "mirrorNotifications") } }
+    @Published var hideSystemBanners: Bool { didSet { d.set(hideSystemBanners, forKey: "hideSystemBanners") } }
     @Published var showBattery: Bool { didSet { d.set(showBattery, forKey: "showBattery") } }
     @Published var showDevices: Bool { didSet { d.set(showDevices, forKey: "showDevices") } }
     @Published var showOnNonNotch: Bool { didSet { d.set(showOnNonNotch, forKey: "showOnNonNotch") } }
@@ -24,7 +26,7 @@ final class Settings: ObservableObject {
     private init() {
         d.register(defaults: [
             "hoverToExpand": true, "hideMenuBarOnHover": true, "showMedia": true, "browserMedia": true, "showHUD": true,
-            "replaceSystemHUD": true, "showNotifications": true, "showBattery": true, "showDevices": true,
+            "replaceSystemHUD": true, "showNotifications": true, "mirrorNotifications": true, "hideSystemBanners": true, "showBattery": true, "showDevices": true,
             "showOnNonNotch": true, "alwaysShowPill": true, "preferBuiltInDisplay": true,
         ])
         hoverToExpand = d.bool(forKey: "hoverToExpand")
@@ -34,6 +36,8 @@ final class Settings: ObservableObject {
         showHUD = d.bool(forKey: "showHUD")
         replaceSystemHUD = d.bool(forKey: "replaceSystemHUD")
         showNotifications = d.bool(forKey: "showNotifications")
+        mirrorNotifications = d.bool(forKey: "mirrorNotifications")
+        hideSystemBanners = d.bool(forKey: "hideSystemBanners")
         showBattery = d.bool(forKey: "showBattery")
         showDevices = d.bool(forKey: "showDevices")
         showOnNonNotch = d.bool(forKey: "showOnNonNotch")

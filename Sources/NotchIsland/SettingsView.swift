@@ -23,7 +23,13 @@ struct SettingsView: View {
                 Toggle(L.t("Ses ve parlaklık göstergesi", "Volume & brightness HUD"), isOn: $s.showHUD)
                 Toggle(L.t("Sistem göstergesinin yerine geç", "Replace the system HUD"), isOn: $s.replaceSystemHUD)
                     .disabled(!s.showHUD)
-                Toggle(L.t("Bildirimler (Dock rozetleri)", "Notifications (Dock badges)"), isOn: $s.showNotifications)
+                Toggle(L.t("Sistem bildirimlerini adada göster (SMS, Telegram…)", "Show system notifications in the island (SMS, Telegram…)"), isOn: $s.mirrorNotifications)
+                Toggle(L.t("macOS bildirim balonunu gizle", "Hide the macOS notification banner"), isOn: $s.hideSystemBanners)
+                    .disabled(!s.mirrorNotifications)
+                Text(L.t("Açıksa sağ üstteki balon otomatik kapatılır; bildirim Bildirim Merkezi'nden de kalkar. Yanıt/erteleme düğmeli bildirimlere dokunulmaz.",
+                         "When on, the corner banner is closed automatically and also leaves Notification Center. Banners with reply/snooze buttons are left alone."))
+                    .font(.caption).foregroundStyle(.secondary)
+                Toggle(L.t("Dock rozetleri", "Dock badges"), isOn: $s.showNotifications)
                 Toggle(L.t("Pil ve şarj", "Battery & charging"), isOn: $s.showBattery)
                 Toggle(L.t("Kulaklık / ses çıkışı", "Headphones / audio output"), isOn: $s.showDevices)
             }

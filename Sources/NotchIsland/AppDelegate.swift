@@ -13,6 +13,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let brightness = BrightnessController()
     private let keyTap = MediaKeyTap()
     private let badges = DockBadgeWatcher()
+    private let banners = NotificationBannerWatcher()
+    private var lastMirrored: [String: Date] = [:]
     private var statusItem: NSStatusItem!
     private var settingsWindow: NSWindow?
     private var permissionTimer: Timer?
@@ -79,8 +81,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         battery.start()
 
+        banners.onNotification = { [weak self] item, icon, url in
+            guard let self else { return }
+            self.lastMirrored[item.appName] = Date()
+            let title = item.title.isEmpty ? item.appName : item.title
+            let text = [item.subtitle, item.body].filter { !$0.isEmpty }.joined(separator: " · ")
+            let banner = Banner(icon: icon, symbol: "bell.fill", title: title, subtitle: text.isEmpty ? item.appName : text,
+                                action: url.map { u in { NSWorkspace.shared.open(u) } })
+            self.model.show(.banner(banner), for: 5)
+        }
+
         badges.onBadge = { [weak self] app, icon, label in
             guard let self else { return }
+            // The banner mirror already showed this one.
+            if let t = self.lastMirrored[app], Date().timeIntervalSince(t) < 6 { return }
             let count = Int(label)
             let subtitle = count.map { L.t("\($0) yeni bildirim", $0 == 1 ? "1 new notification" : "\($0) new notifications") }
                 ?? L.t("Yeni bildirim", "New notification")
@@ -96,6 +110,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         media.configure(enabled: settings.showMedia, browsers: settings.browserMedia)
         model.mediaVisible = media.showsCompact && settings.showMedia
         if settings.showNotifications && settings.accessibilityGranted { badges.start() } else { badges.stop() }
+        banners.hideSystemBanners = settings.hideSystemBanners
+        if settings.mirrorNotifications && settings.accessibilityGranted { banners.start() } else { banners.stop() }
         if settings.showHUD && settings.replaceSystemHUD && settings.accessibilityGranted { keyTap.start() } else { keyTap.stop() }
         controller.refreshGeometry()
         model.objectWillChange.send()

@@ -50,7 +50,14 @@ struct IslandView: View {
                 .clipShape(NotchShape(topRadius: 0, bottomRadius: r.bottom))
         }
         .contentShape(Rectangle())
-        .onTapGesture { model.expanded.toggle() }
+        .onTapGesture {
+            if case .banner(let b) = state, let action = b.action {
+                action()
+                model.dismissTransient()
+            } else {
+                model.expanded.toggle()
+            }
+        }
         .opacity(state == .hidden ? 0 : 1)
         .foregroundStyle(.white)
         .environment(\.colorScheme, .dark)
@@ -193,7 +200,7 @@ struct BannerView: View {
                 .frame(width: 36, height: 36)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(banner.title).font(.system(size: 13, weight: .semibold)).lineLimit(1)
-                    Text(banner.subtitle).font(.system(size: 12)).foregroundStyle(.white.opacity(0.65)).lineLimit(1)
+                    Text(banner.subtitle).font(.system(size: 12)).foregroundStyle(.white.opacity(0.7)).lineLimit(2)
                 }
                 Spacer(minLength: 0)
             }
