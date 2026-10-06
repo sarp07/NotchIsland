@@ -37,12 +37,9 @@ Gereksinimler: **Apple Silicon** (M1 veya daha yeni) bir Mac ve **macOS 14** ya 
 ### Yöntem 1: İndir (en kolayı)
 
 1. [Releases](../../releases/latest) sayfasından `NotchIsland.zip` dosyasını indir ve aç.
-2. `NotchIsland.app` dosyasını **Uygulamalar** klasörüne sürükle.
-3. Terminal'i açıp şunu bir kere çalıştır. Uygulama Apple tarafından onaylanmadığı (notarize edilmediği) için macOS bu adım olmadan açılışı engeller:
-   ```bash
-   xattr -dr com.apple.quarantine /Applications/NotchIsland.app
-   ```
-4. NotchIsland'ı aç.
+2. `NotchIsland.app` dosyasını **Uygulamalar** klasörüne sürükle ve aç.
+
+Uygulama Apple tarafından imzalanmış ve onaylanmıştır (notarized). Diğer uygulamalar gibi doğrudan açılır.
 
 ### Yöntem 2: Kaynaktan derle
 

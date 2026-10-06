@@ -37,12 +37,9 @@ Requirements: a Mac with **Apple Silicon** (M1 or newer) and **macOS 14** or lat
 ### Option 1: Download (easiest)
 
 1. Download `NotchIsland.zip` from [Releases](../../releases/latest) and unzip it.
-2. Drag `NotchIsland.app` into **Applications**.
-3. Open Terminal and run this once. The app is not notarized by Apple, so macOS blocks it without this step:
-   ```bash
-   xattr -dr com.apple.quarantine /Applications/NotchIsland.app
-   ```
-4. Open NotchIsland.
+2. Drag `NotchIsland.app` into **Applications** and open it.
+
+The app is signed and notarized by Apple, so it opens like any other app.
 
 ### Option 2: Build from source
 
