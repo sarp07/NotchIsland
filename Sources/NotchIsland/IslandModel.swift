@@ -60,10 +60,14 @@ enum Transient: Equatable {
     case banner(Banner)
 }
 
+enum ExpandedPage: String { case media, tools }
+
 enum DisplayState: Equatable {
-    case hidden, idle, music, expanded
+    case hidden, idle, music
+    case expanded(ExpandedPage)
     case hud(HUDKind, Float, Bool)
     case banner(Banner)
+    case locked(LockInfo)
 
     /// Identity used for content transitions (value changes inside a HUD don't re-create the view).
     var kind: String {
@@ -71,7 +75,8 @@ enum DisplayState: Equatable {
         case .hidden: "hidden"
         case .idle: "idle"
         case .music: "music"
-        case .expanded: "expanded"
+        case .expanded(let page): "expanded-\(page.rawValue)"
+        case .locked: "locked"
         case .hud(let k, _, _): "hud-\(k)"
         case .banner(let b): "banner-\(b.id)"
         }
@@ -79,7 +84,7 @@ enum DisplayState: Equatable {
 
     var isLarge: Bool {
         switch self {
-        case .hud, .banner, .expanded: true
+        case .hud, .banner, .expanded, .locked: true
         default: false
         }
     }
@@ -93,6 +98,8 @@ final class IslandModel: ObservableObject {
     @Published var geometry: IslandGeometry
     @Published var expanded = false
     @Published var mediaVisible = false
+    @Published var page: ExpandedPage = .media
+    @Published var lock: LockInfo?
     @Published private(set) var transient: Transient?
     private var transientGeneration = 0
 
@@ -116,12 +123,14 @@ final class IslandModel: ObservableObject {
     }
 
     var state: DisplayState {
+        // An input lock always shows, so the unlock shortcut is never hidden.
+        if let lock { return .locked(lock) }
         switch transient {
         case .hud(let k, let v, let m): return .hud(k, v, m)
         case .banner(let b): return .banner(b)
         case nil: break
         }
-        if expanded { return .expanded }
+        if expanded { return .expanded(page) }
         if mediaVisible { return .music }
         return geometry.hasNotch || Settings.shared.alwaysShowPill ? .idle : .hidden
     }
@@ -133,7 +142,11 @@ final class IslandModel: ObservableObject {
         case .music: return CGSize(width: n.width + 92, height: n.height)
         case .hud: return CGSize(width: max(n.width + 110, 300), height: n.height + 38)
         case .banner: return CGSize(width: max(n.width + 200, 400), height: n.height + 66)
-        case .expanded: return CGSize(width: max(n.width + 280, 480), height: n.height + 128)
+        case .expanded(.media): return CGSize(width: max(n.width + 280, 480), height: n.height + 128)
+        case .expanded(.tools):
+            let rows = max(1, (Settings.shared.visibleTools.count + 3) / 4)
+            return CGSize(width: max(n.width + 280, 480), height: n.height + 40 + CGFloat(rows) * 72)
+        case .locked: return CGSize(width: max(n.width + 230, 440), height: n.height + 74)
         }
     }
 
@@ -141,7 +154,7 @@ final class IslandModel: ObservableObject {
         switch s {
         case .hidden, .idle: return geometry.hasNotch ? (0, 10) : (6, 13)
         case .music: return (6, 13)
-        case .hud, .banner: return (10, 20)
+        case .hud, .banner, .locked: return (10, 20)
         case .expanded: return (14, 28)
         }
     }

@@ -14,6 +14,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let keyTap = MediaKeyTap()
     private let badges = DockBadgeWatcher()
     private let banners = NotificationBannerWatcher()
+    private let tools = ToolsController()
+    private let updater = Updater.shared
+    private var updateWindow: UpdateWindowController?
     private var lastMirrored: [String: Date] = [:]
     private var statusItem: NSStatusItem!
     private var settingsWindow: NSWindow?
@@ -23,7 +26,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         let screen = IslandGeometry.targetScreen(preferBuiltIn: settings.preferBuiltInDisplay)
         model = IslandModel(geometry: screen.map(IslandGeometry.init(screen:)) ?? .fallback)
-        controller = IslandController(model: model, media: media, battery: battery)
+        controller = IslandController(model: model, media: media, battery: battery, tools: tools)
+        updateWindow = UpdateWindowController(updater: updater)
 
         media.$showsCompact
             .sink { [weak self] visible in
@@ -32,9 +36,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
             .store(in: &cancellables)
 
+        tools.$lock
+            .sink { [weak self] lock in self?.model.lock = lock }
+            .store(in: &cancellables)
+
         wireServices()
         setupStatusItem()
         applySettings()
+
+        if CommandLine.arguments.contains("--auto-update-test") {
+            // Diagnostic: check and install right away, no UI interaction needed.
+            updater.$phase.filter { $0 == .available }.first()
+                .sink { [weak self] _ in self?.updater.install() }
+                .store(in: &cancellables)
+            updater.check(userInitiated: true)
+        } else {
+            updater.startAutomaticChecks()
+        }
 
         settings.objectWillChange
             .sink { [weak self] _ in DispatchQueue.main.async { self?.applySettings() } }
@@ -99,6 +117,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let subtitle = count.map { L.t("\($0) yeni bildirim", $0 == 1 ? "1 new notification" : "\($0) new notifications") }
                 ?? L.t("Yeni bildirim", "New notification")
             self.model.show(.banner(Banner(icon: icon, symbol: "bell.fill", title: app, subtitle: subtitle)), for: 4)
+        }
+
+        tools.onMessage = { [weak self] banner in self?.model.show(.banner(banner), for: 3) }
+        tools.onCollapse = { [weak self] in self?.model.expanded = false }
+
+        updater.onUpToDate = { [weak self] in
+            self?.model.show(.banner(Banner(symbol: "checkmark.seal.fill", tint: .green,
+                                            title: L.t("NotchIsland güncel", "NotchIsland is up to date"),
+                                            subtitle: L.t("\(Updater.currentVersion) en son sürüm.", "\(Updater.currentVersion) is the latest version."))), for: 3)
+        }
+        updater.onCheckFailed = { [weak self] in
+            self?.model.show(.banner(Banner(symbol: "wifi.exclamationmark", tint: .orange,
+                                            title: L.t("Güncelleme denetlenemedi", "Couldn't check for updates"),
+                                            subtitle: L.t("İnternet bağlantını kontrol et.", "Check your internet connection."))), for: 3)
         }
 
         keyTap.handler = { [weak self] key, down, fine in
@@ -168,6 +200,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(title)
         menu.addItem(.separator())
         menu.addItem(withTitle: L.t("Ayarlar…", "Settings…"), action: #selector(openSettings), keyEquivalent: ",").target = self
+        menu.addItem(withTitle: L.t("Güncellemeleri denetle…", "Check for updates…"), action: #selector(checkForUpdates), keyEquivalent: "").target = self
+        if tools.lock != nil {
+            menu.addItem(withTitle: L.t("Klavye ve fare kilidini aç", "Unlock keyboard and pointer"), action: #selector(unlockInput), keyEquivalent: "").target = self
+        }
         if !AXIsProcessTrusted() {
             menu.addItem(withTitle: L.t("Erişilebilirlik izni ver…", "Grant Accessibility…"),
                          action: #selector(grantAccessibility), keyEquivalent: "").target = self
@@ -177,6 +213,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func grantAccessibility() { Settings.openAccessibilitySettings() }
+    @objc private func checkForUpdates() { updater.check(userInitiated: true) }
+    @objc private func unlockInput() { tools.unlockAll() }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        tools.unlockAll()
+    }
 
     @objc func openSettings() {
         if settingsWindow == nil {

@@ -96,7 +96,7 @@ final class NotificationBannerWatcher {
         let ids = banners.map { string($0, kAXIdentifierAttribute) ?? string($0, kAXDescriptionAttribute) ?? "" }
         let fresh = zip(ids, banners).filter { !$0.0.isEmpty && !seen.contains($0.0) }
         seen = Set(ids)
-        // Many "new" banners at once means the user opened Notification Center — that's history, not news.
+        // Many "new" banners at once means the user opened Notification Center: that's history, not news.
         guard !initial, !fresh.isEmpty, fresh.count <= 2 else { return }
 
         for (_, banner) in fresh {
@@ -121,14 +121,14 @@ final class NotificationBannerWatcher {
         for child in elements(banner, kAXChildrenAttribute) {
             if let id = string(child, kAXIdentifierAttribute), let v = string(child, kAXValueAttribute) { texts[id] = v }
         }
-        // Description is "App, Title, Subtitle, Body" — the app name is the first part.
+        // Description is "App, Title, Subtitle, Body"; the app name is the first part.
         let appName = string(banner, kAXDescriptionAttribute)?.components(separatedBy: ", ").first ?? ""
         let title = texts["title"] ?? ""
         guard !title.isEmpty || !(texts["body"] ?? "").isEmpty else { return nil }
         return Item(appName: appName, title: title, subtitle: texts["subtitle"] ?? "", body: texts["body"] ?? "")
     }
 
-    /// Presses the banner's own "Close" action — only for plain banners (no reply/snooze buttons).
+    /// Presses the banner's own "Close" action, only for plain banners (no reply/snooze buttons).
     private func close(_ banner: AXUIElement) {
         var names: CFArray?
         guard AXUIElementCopyActionNames(banner, &names) == .success, let actions = names as? [String] else { return }

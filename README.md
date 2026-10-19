@@ -21,13 +21,19 @@
 
 - 🎵 **Music:** Spotify, Apple Music, YouTube Music, Spotify Web. Cover art and playback controls.
 - 🔊 **Volume and brightness:** shown in the island instead of the system popup.
-- 🔔 **Notifications:** new WhatsApp, Mail, Telegram… badges pop up in the island.
+- 🔔 **Notifications:** SMS, Telegram, WhatsApp and system alerts show up in the island instead of the corner.
+- 🧰 **Tools:** lock the keyboard or the mouse and trackpad (for cleaning), Bluetooth, Wi-Fi, microphone, keep awake, dark mode, screenshot. Pick and order them in Settings.
 - 🔋 **Battery and AirPods:** charging, low battery, headphones connected.
 - 💻 **No notch? No problem.** A virtual island appears at the top of the screen.
+- ⬆️ **Updates:** when a new version is out, a card appears on top of every window. One click installs it.
 
-Hover the island to expand it. Click to open or close.
+Hover the island to expand it. Click to open or close. Switch between Music and Tools with the buttons at the top left.
+
+**Keyboard lock for cleaning:** open Tools, tap *Lock keyboard* and wipe away. Press <kbd>⌃</kbd><kbd>⌥</kbd><kbd>⌘</kbd><kbd>L</kbd> to unlock, or click *Unlock* in the island. For safety the lock always opens by itself after 2 minutes (adjustable).
 
 <p align="center">
+  <img src="docs/tools-notch.png" width="400">
+  <img src="docs/locked-notch.png" width="400">
   <img src="docs/music-notch.png" width="400">
   <img src="docs/volume-notch.png" width="400">
   <img src="docs/notification-notch.png" width="400">
@@ -64,7 +70,8 @@ If you see "Command Line Tools are required", run `xcode-select --install` first
 
 ## Privacy
 
-- Sends **no data** anywhere: no analytics, no tracking. The only network request is Spotify cover art.
+- Sends **no data** anywhere: no analytics, no tracking. The only network requests are Spotify cover art and the update check on GitHub.
+- Updates are installed only if they are signed by the same Apple developer as the app you have.
 - Uses only official macOS features. It does not inject code into other apps and does not bypass system security.
 - In your browser it reads only the **title and URL** of YouTube Music / Spotify tabs. Nothing else.
 

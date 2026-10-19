@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds build/NotchIsland.app (Apple Silicon only).
-# Optional: SIGN_IDENTITY="Apple Development: …" ./scripts/build.sh — keeps macOS permissions across rebuilds.
+# Optional: SIGN_IDENTITY="Developer ID Application: ..." ./scripts/build.sh keeps macOS permissions across rebuilds.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

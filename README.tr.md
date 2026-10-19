@@ -21,13 +21,19 @@
 
 - 🎵 **Müzik:** Spotify, Apple Music, YouTube Music, Spotify Web. Kapak resmi ve oynatma kontrolleri.
 - 🔊 **Ses ve parlaklık:** Sistemin açılır göstergesi yerine adada görünür.
-- 🔔 **Bildirimler:** WhatsApp, Mail, Telegram… uygulamalarına yeni rozet gelince adada çıkar.
+- 🔔 **Bildirimler:** SMS, Telegram, WhatsApp ve sistem uyarıları köşe yerine adada görünür.
+- 🧰 **Araçlar:** klavyeyi veya fare ve trackpad'i kilitleme (temizlik için), Bluetooth, Wi-Fi, mikrofon, uyanık tut, karanlık mod, ekran görüntüsü. Hangilerinin görüneceğini ve sırasını Ayarlar'dan seçersin.
 - 🔋 **Pil ve AirPods:** Şarj, düşük pil, kulaklık bağlandı.
 - 💻 **Çentik yok mu? Sorun değil.** Ekranın üstünde sanal bir ada belirir.
+- ⬆️ **Güncellemeler:** yeni sürüm çıkınca her pencerenin üstünde bir kart belirir, tek tıkla kurulur.
 
-Üzerine gelince ada genişler. Tıklayınca açılıp kapanır.
+Üzerine gelince ada genişler. Tıklayınca açılıp kapanır. Sol üstteki düğmelerle Müzik ve Araçlar arasında geçersin.
+
+**Temizlik için klavye kilidi:** Araçlar'ı aç, *Klavye kilidi*'ne bas ve rahatça sil. Açmak için <kbd>⌃</kbd><kbd>⌥</kbd><kbd>⌘</kbd><kbd>L</kbd> tuşlarına bas ya da adadaki *Kilidi aç* düğmesine tıkla. Güvenlik için kilit 2 dakika sonra kendiliğinden açılır (süre ayarlanabilir).
 
 <p align="center">
+  <img src="docs/tools-notch.png" width="400">
+  <img src="docs/locked-notch.png" width="400">
   <img src="docs/music-notch.png" width="400">
   <img src="docs/volume-notch.png" width="400">
   <img src="docs/notification-notch.png" width="400">
@@ -64,7 +70,8 @@ cd NotchIsland
 
 ## Gizlilik
 
-- Hiçbir yere **veri göndermez**: analitik yok, takip yok. Tek ağ isteği Spotify kapak resmidir.
+- Hiçbir yere **veri göndermez**: analitik yok, takip yok. Yaptığı ağ istekleri yalnızca Spotify kapak resmi ve GitHub'dan güncelleme kontrolüdür.
+- Güncellemeler yalnızca kullandığın uygulamayla aynı Apple geliştiricisi tarafından imzalanmışsa kurulur.
 - Sadece macOS'un resmi özelliklerini kullanır. Başka uygulamalara kod enjekte etmez, sistem güvenliğini atlatmaz.
 - Tarayıcında yalnızca YouTube Music / Spotify sekmelerinin **başlığını ve adresini** okur. Başka hiçbir şeyi okumaz.
 

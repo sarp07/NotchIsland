@@ -61,9 +61,9 @@ final class IslandController {
     private var hovering = false
     private var hoverWork: DispatchWorkItem?
 
-    init(model: IslandModel, media: MediaController, battery: BatteryMonitor) {
+    init(model: IslandModel, media: MediaController, battery: BatteryMonitor, tools: ToolsController) {
         self.model = model
-        let host = FirstMouseHostingView(rootView: IslandView(model: model, media: media, battery: battery))
+        let host = FirstMouseHostingView(rootView: IslandView(model: model, media: media, battery: battery, tools: tools))
         host.sizingOptions = []
         host.frame = CGRect(origin: .zero, size: IslandModel.canvasSize)
         panel.contentView = host

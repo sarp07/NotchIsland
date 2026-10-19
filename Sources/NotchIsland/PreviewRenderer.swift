@@ -24,6 +24,10 @@ enum PreviewRenderer {
                 ("music", { m, media in media.setPreview(track); m.mediaVisible = true }),
                 ("expanded", { m, media in media.setPreview(track); m.expanded = true }),
                 ("expanded-empty", { m, _ in m.expanded = true }),
+                ("tools", { m, _ in m.expanded = true; m.page = .tools }),
+                ("locked", { m, _ in
+                    m.lock = LockInfo(keyboard: true, pointer: false, startedAt: Date(), endsAt: Date().addingTimeInterval(97))
+                }),
                 ("volume", { m, _ in m.show(.hud(.volume, 0.62, muted: false), for: 60) }),
                 ("brightness", { m, _ in m.show(.hud(.brightness, 0.8, muted: false), for: 60) }),
                 ("notification", { m, _ in
@@ -46,15 +50,42 @@ enum PreviewRenderer {
                     LinearGradient(colors: [Color(red: 0.25, green: 0.2, blue: 0.45), Color(red: 0.08, green: 0.1, blue: 0.2)],
                                    startPoint: .top, endPoint: .bottom)
                     Rectangle().fill(.white.opacity(0.12)).frame(height: geo.notchSize.height)
-                    IslandView(model: model, media: media, battery: battery)
+                    IslandView(model: model, media: media, battery: battery, tools: ToolsController())
                 }
                 .frame(width: IslandModel.canvasSize.width, height: IslandModel.canvasSize.height)
+                .transaction { $0.disablesAnimations = true }
                 let renderer = ImageRenderer(content: view)
                 renderer.scale = 2
                 guard let cg = renderer.cgImage else { continue }
                 let png = NSBitmapImageRep(cgImage: cg).representation(using: .png, properties: [:])
                 try? png?.write(to: url.appendingPathComponent("\(name)-\(suffix).png"))
             }
+        }
+        // Every tile in its active state, without the live refresh/animation of the real page.
+        let tiles = HStack(spacing: 8) {
+            ForEach(ToolID.allCases) { ToolTile(tool: $0, active: true) {} }
+        }
+        .padding(16)
+        .background(Color.black)
+        .environment(\.colorScheme, .dark)
+        .transaction { $0.disablesAnimations = true }
+        let tr = ImageRenderer(content: tiles)
+        tr.scale = 2
+        if let cg = tr.cgImage, let png = NSBitmapImageRep(cgImage: cg).representation(using: .png, properties: [:]) {
+            try? png.write(to: url.appendingPathComponent("tiles-active.png"))
+        }
+
+        // Update card, rendered on its own.
+        Updater.shared.setPreview(ReleaseInfo(version: "0.3.0",
+            notes: L.t("Araçlar sayfası: klavye ve fare kilidi, Bluetooth, Wi-Fi, mikrofon\nGüncelleme bildirimi", "Tools page: keyboard and pointer lock, Bluetooth, Wi-Fi, microphone\nUpdate notifications"),
+            pageURL: URL(string: "https://github.com")!, zipURL: nil))
+        let card = UpdateCard(updater: Updater.shared)
+            .background(LinearGradient(colors: [Color(red: 0.25, green: 0.2, blue: 0.45), Color(red: 0.08, green: 0.1, blue: 0.2)],
+                                       startPoint: .top, endPoint: .bottom))
+        let r = ImageRenderer(content: card)
+        r.scale = 2
+        if let cg = r.cgImage, let png = NSBitmapImageRep(cgImage: cg).representation(using: .png, properties: [:]) {
+            try? png.write(to: url.appendingPathComponent("update-card.png"))
         }
         print("✓ previews → \(dir)")
     }

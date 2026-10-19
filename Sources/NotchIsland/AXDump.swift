@@ -34,3 +34,33 @@ enum AXDump {
         for c in list { walk(c, depth: depth + 1, into: &out) }
     }
 }
+
+/// `NotchIsland --input-lock-selftest <file>`: locks the pointer for a moment, posts a synthetic
+/// mouse move and records whether the cursor moved, then unlocks. Diagnostic only.
+enum InputLockSelfTest {
+    static func run(to path: String) {
+        var out = "trusted=\(AXIsProcessTrusted())\n"
+        let lock = InputLock()
+        func cursor() -> CGPoint { CGEvent(source: nil)?.location ?? .zero }
+        func nudge(from p: CGPoint) {
+            CGEvent(mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: CGPoint(x: p.x + 40, y: p.y + 40),
+                    mouseButton: .left)?.post(tap: .cghidEventTap)
+        }
+        func spin() { RunLoop.main.run(until: Date().addingTimeInterval(0.15)) }
+
+        let start = cursor()
+        out += "lock(pointer)=\(lock.set(keyboard: false, pointer: true))\n"
+        nudge(from: start); spin()
+        let whileLocked = cursor()
+        out += "moved while locked: \(whileLocked != start) (tap saw \(lock.seenPointerEvents) events)\n"
+        lock.release()
+        nudge(from: start); spin()
+        let afterUnlock = cursor()
+        out += "moved after unlock: \(afterUnlock != start)\n"
+        out += "lock(keyboard)=\(lock.set(keyboard: true, pointer: false))\n"
+        lock.release()
+        // Put the cursor back where it was.
+        CGWarpMouseCursorPosition(start)
+        try? out.write(toFile: path, atomically: true, encoding: .utf8)
+    }
+}

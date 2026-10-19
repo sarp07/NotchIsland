@@ -30,6 +30,7 @@ struct IslandView: View {
     @ObservedObject var model: IslandModel
     @ObservedObject var media: MediaController
     @ObservedObject var battery: BatteryMonitor
+    @ObservedObject var tools: ToolsController
     @ObservedObject var settings = Settings.shared
 
     var body: some View {
@@ -51,7 +52,9 @@ struct IslandView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            if case .banner(let b) = state, let action = b.action {
+            if case .locked(let lock) = state {
+                if !lock.pointer { tools.unlockAll() }
+            } else if case .banner(let b) = state, let action = b.action {
                 action()
                 model.dismissTransient()
             } else {
@@ -81,8 +84,10 @@ struct IslandView: View {
         case .banner(let banner):
             BannerView(banner: banner, notchHeight: notchH)
         case .expanded:
-            ExpandedView(media: media, battery: battery.state, notchHeight: notchH,
+            ExpandedView(model: model, media: media, tools: tools, battery: battery.state, notchHeight: notchH,
                          notchWidth: model.geometry.notchSize.width, hasNotch: model.geometry.hasNotch)
+        case .locked(let lock):
+            LockedView(lock: lock, notchHeight: notchH) { tools.unlockAll() }
         }
     }
 }
@@ -97,8 +102,18 @@ struct CompactMusicView: View {
         HStack {
             ArtworkView(np: np, size: notchHeight - 12, radius: 6)
             Spacer()
-            EqualizerView(playing: np.isPlaying, color: np.tint)
-                .frame(width: 20, height: notchHeight - 18)
+            Group {
+                if np.isPlaying {
+                    EqualizerView(playing: true, color: np.tint)
+                } else {
+                    Image(systemName: "pause.fill")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(np.tint.opacity(0.9))
+                        .accessibilityLabel(L.t("Duraklatıldı", "Paused"))
+                }
+            }
+            .frame(width: 20, height: notchHeight - 18)
+            .contentTransition(.opacity)
         }
         .padding(.horizontal, 11)
         .frame(height: notchHeight)
@@ -213,7 +228,9 @@ struct BannerView: View {
 // MARK: - Expanded
 
 struct ExpandedView: View {
+    @ObservedObject var model: IslandModel
     @ObservedObject var media: MediaController
+    let tools: ToolsController
     let battery: BatteryMonitor.State
     let notchHeight: CGFloat
     let notchWidth: CGFloat
@@ -223,15 +240,8 @@ struct ExpandedView: View {
         VStack(spacing: 0) {
             // Top row lives in the "wings" on either side of the camera notch.
             HStack(spacing: 0) {
-                HStack(spacing: 6) {
-                    if let np = media.current {
-                        if let icon = np.appIcon { Image(nsImage: icon).resizable().frame(width: 14, height: 14) }
-                        Text(np.sourceName)
-                    } else {
-                        Text("NotchIsland")
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                PageSwitcher(page: $model.page)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Color.clear.frame(width: hasNotch ? notchWidth : 0)
                 Group {
                     if battery.hasBattery { BatteryBadge(state: battery) }
@@ -244,11 +254,16 @@ struct ExpandedView: View {
             .padding(.horizontal, 22)
             .frame(height: notchHeight)
 
-            if let np = media.current {
-                NowPlayingPanel(np: np, media: media)
-            } else {
-                IdlePanel()
+            Group {
+                if model.page == .tools {
+                    ToolsPanel(tools: tools)
+                } else if let np = media.current {
+                    NowPlayingPanel(np: np, media: media)
+                } else {
+                    IdlePanel()
+                }
             }
+            .transition(.opacity)
         }
     }
 }

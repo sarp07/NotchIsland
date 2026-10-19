@@ -7,6 +7,11 @@ MainActor.assumeIsolated {
         PreviewRenderer.render(to: i + 1 < args.count ? args[i + 1] : "previews")
         exit(0)
     }
+    if let i = args.firstIndex(of: "--input-lock-selftest") {
+        _ = NSApplication.shared
+        InputLockSelfTest.run(to: i + 1 < args.count ? args[i + 1] : "/tmp/notchisland-lock.txt")
+        exit(0)
+    }
     if let i = args.firstIndex(of: "--dump-notification-ax") {
         AXDump.dumpNotificationCenter(to: i + 1 < args.count ? args[i + 1] : "/tmp/notchisland-ax.txt")
         exit(0)

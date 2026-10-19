@@ -31,7 +31,7 @@ func webAppIcon(named name: String) -> NSImage? {
 }
 
 extension NSImage {
-    /// Plain sRGB bitmap copy — workspace icons carry many reps/colour spaces that render oddly offscreen.
+    /// Plain sRGB bitmap copy: workspace icons carry many reps/colour spaces that render oddly offscreen.
     func flattened(side: CGFloat = 64) -> NSImage {
         let px = Int(side * 2)
         guard let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: px, pixelsHigh: px, bitsPerSample: 8,
@@ -105,7 +105,7 @@ extension NSAppleEventDescriptor {
     }
 }
 
-/// Posts a system media key (play/next/previous) — routed by macOS to whatever is playing.
+/// Posts a system media key (play/next/previous), routed by macOS to whatever is playing.
 enum MediaKeys {
     static let play: Int32 = 16, next: Int32 = 17, previous: Int32 = 18
 

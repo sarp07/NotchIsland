@@ -65,7 +65,7 @@ final class MediaController: ObservableObject {
         if next != current { current = next }
 
         hideWork?.cancel()
-        if next?.isPlaying == true {
+        if next?.isPlaying == true || (next != nil && Settings.shared.showPausedMedia) {
             if !showsCompact { showsCompact = true }
         } else if next == nil {
             showsCompact = false
@@ -278,7 +278,7 @@ final class AppleMusicProvider {
     }
 }
 
-// MARK: - Browser tabs (YouTube Music, Spotify Web) — reads only tab URL + title
+// MARK: - Browser tabs (YouTube Music, Spotify Web): reads only tab URL + title
 
 @MainActor
 final class BrowserProvider {
@@ -328,7 +328,7 @@ final class BrowserProvider {
         let running = Self.browsers.filter { isRunning($0.bundleID) }
         guard !running.isEmpty else { publish(nil); return }
         var pending = running.count
-        var found: NowPlaying?
+        var found: TabMatch?
         for b in running {
             let script = """
             tell application id "\(b.bundleID)"
@@ -337,34 +337,42 @@ final class BrowserProvider {
             """
             ScriptRunner.run(script) { [weak self] d in
                 guard let self else { return }
-                if found == nil, let d { found = self.match(d, browserID: b.bundleID) }
+                if found?.track == nil, let d, let m = self.match(d, browserID: b.bundleID) { found = m }
                 pending -= 1
                 if pending == 0 { self.publish(found) }
             }
         }
     }
 
-    private func match(_ d: NSAppleEventDescriptor, browserID: String) -> NowPlaying? {
-        let urls = d.item(1)?.flatStrings ?? [], titles = d.item(2)?.flatStrings ?? []
-        for (url, title) in zip(urls, titles) {
-            if url.contains("music.youtube.com"), let np = Self.parseYouTubeMusic(title) {
-                var t = np
-                t.appIcon = webAppIcon(named: "YouTube Music") ?? appIcon(bundleID: browserID)
-                return t
-            }
-            if url.contains("open.spotify.com"), let np = Self.parseSpotifyWeb(title) {
-                var t = np
-                t.appIcon = appIcon(bundleID: SpotifyProvider.bundleID) ?? appIcon(bundleID: browserID)
-                return t
-            }
-        }
-        return nil
+    /// A music tab that is open; `track` is nil while the player is paused or idle
+    /// (both services drop the song from the tab title when paused).
+    private struct TabMatch {
+        var service: String
+        var track: NowPlaying?
     }
 
-    /// "Song | YouTube Music" (also "-" / "–" variants); plain "YouTube Music" means nothing loaded.
+    private func match(_ d: NSAppleEventDescriptor, browserID: String) -> TabMatch? {
+        let urls = d.item(1)?.flatStrings ?? [], titles = d.item(2)?.flatStrings ?? []
+        var idle: TabMatch?
+        for (url, title) in zip(urls, titles) {
+            if url.contains("music.youtube.com") {
+                guard var t = Self.parseYouTubeMusic(title) else { idle = idle ?? TabMatch(service: "YouTube Music"); continue }
+                t.appIcon = webAppIcon(named: "YouTube Music") ?? appIcon(bundleID: browserID)
+                return TabMatch(service: t.sourceName, track: t)
+            }
+            if url.contains("open.spotify.com") {
+                guard var t = Self.parseSpotifyWeb(title) else { idle = idle ?? TabMatch(service: "Spotify Web"); continue }
+                t.appIcon = appIcon(bundleID: SpotifyProvider.bundleID) ?? appIcon(bundleID: browserID)
+                return TabMatch(service: t.sourceName, track: t)
+            }
+        }
+        return idle
+    }
+
+    /// "Song | YouTube Music" (also hyphen and en dash variants); plain "YouTube Music" means nothing loaded.
     static func parseYouTubeMusic(_ title: String) -> NowPlaying? {
         var t = title.trimmingCharacters(in: .whitespaces)
-        for suffix in [" | YouTube Music", " - YouTube Music", " – YouTube Music"] where t.hasSuffix(suffix) {
+        for suffix in [" | YouTube Music", " - YouTube Music", " \u{2013} YouTube Music"] where t.hasSuffix(suffix) {
             t = String(t.dropLast(suffix.count))
         }
         guard !t.isEmpty, t != "YouTube Music" else { return nil }
@@ -373,7 +381,7 @@ final class BrowserProvider {
                           artist: parts.count > 1 ? parts[1] : "YouTube Music", isPlaying: true)
     }
 
-    /// Spotify Web shows "Song • Artist" while playing, "Spotify – …" otherwise.
+    /// Spotify Web shows "Song • Artist" while playing, "Spotify, Web Player…" otherwise.
     static func parseSpotifyWeb(_ title: String) -> NowPlaying? {
         let parts = title.components(separatedBy: " • ")
         guard parts.count >= 2, !title.hasPrefix("Spotify") else { return nil }
@@ -381,13 +389,34 @@ final class BrowserProvider {
                           artist: parts[1...].joined(separator: " • "), isPlaying: true)
     }
 
-    private func publish(_ np: NowPlaying?) {
-        guard var np else {
+    private func publish(_ match: TabMatch?) {
+        guard let match else {
             if lastKey != nil { lastKey = nil; lastTrack = nil; onUpdate?(nil) }
             return
         }
+        guard var np = match.track else {
+            // Tab still open but the song left the title: the player was paused. Keep the last song, paused.
+            if var t = lastTrack, t.sourceName == match.service, t.isPlaying {
+                t.isPlaying = false
+                t.updatedAt = Date()
+                playing = false
+                lastTrack = t
+                onUpdate?(t)
+            }
+            return
+        }
         let key = "\(np.sourceName)|\(np.title)|\(np.artist)"
-        guard key != lastKey else { return }
+        if key == lastKey {
+            // Same song back in the title after a pause: it is playing again.
+            if var t = lastTrack, !t.isPlaying, !playing {
+                t.isPlaying = true
+                t.updatedAt = Date()
+                playing = true
+                lastTrack = t
+                onUpdate?(t)
+            }
+            return
+        }
         // A new title means a new track started playing.
         lastKey = key
         playing = true
