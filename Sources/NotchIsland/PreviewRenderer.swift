@@ -26,7 +26,7 @@ enum PreviewRenderer {
                 ("expanded-empty", { m, _ in m.expanded = true }),
                 ("tools", { m, _ in m.expanded = true; m.page = .tools }),
                 ("locked", { m, _ in
-                    m.lock = LockInfo(keyboard: true, pointer: false, startedAt: Date(), endsAt: Date().addingTimeInterval(97))
+                    m.lock = LockInfo(keyboard: true, pointer: true, startedAt: Date(), endsAt: Date().addingTimeInterval(97))
                 }),
                 ("volume", { m, _ in m.show(.hud(.volume, 0.62, muted: false), for: 60) }),
                 ("brightness", { m, _ in m.show(.hud(.brightness, 0.8, muted: false), for: 60) }),

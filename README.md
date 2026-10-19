@@ -22,14 +22,14 @@
 - 🎵 **Music:** Spotify, Apple Music, YouTube Music, Spotify Web. Cover art and playback controls.
 - 🔊 **Volume and brightness:** shown in the island instead of the system popup.
 - 🔔 **Notifications:** SMS, Telegram, WhatsApp and system alerts show up in the island instead of the corner.
-- 🧰 **Tools:** lock the keyboard or the mouse and trackpad (for cleaning), Bluetooth, Wi-Fi, microphone, keep awake, dark mode, screenshot. Pick and order them in Settings.
+- 🧰 **Tools:** cleaning mode (locks the keyboard, mouse and trackpad together), Bluetooth, Wi-Fi, microphone, keep awake, dark mode, screenshot. Pick and order them in Settings.
 - 🔋 **Battery and AirPods:** charging, low battery, headphones connected.
 - 💻 **No notch? No problem.** A virtual island appears at the top of the screen.
 - ⬆️ **Updates:** when a new version is out, a card appears on top of every window. One click installs it.
 
 Hover the island to expand it. Click to open or close. Switch between Music and Tools with the buttons at the top left.
 
-**Keyboard lock for cleaning:** open Tools, tap *Lock keyboard* and wipe away. Press <kbd>⌃</kbd><kbd>⌥</kbd><kbd>⌘</kbd><kbd>L</kbd> to unlock, or click *Unlock* in the island. For safety the lock always opens by itself after 2 minutes (adjustable).
+**Cleaning mode:** open Tools, tap *Cleaning mode* and wipe away: the keyboard, mouse and trackpad are locked together. Press <kbd>⌃</kbd><kbd>⌥</kbd><kbd>⌘</kbd><kbd>L</kbd> to unlock, For safety the lock always opens by itself after 2 minutes (adjustable).
 
 <p align="center">
   <img src="docs/tools-notch.png" width="400">

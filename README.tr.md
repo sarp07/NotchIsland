@@ -22,14 +22,14 @@
 - 🎵 **Müzik:** Spotify, Apple Music, YouTube Music, Spotify Web. Kapak resmi ve oynatma kontrolleri.
 - 🔊 **Ses ve parlaklık:** Sistemin açılır göstergesi yerine adada görünür.
 - 🔔 **Bildirimler:** SMS, Telegram, WhatsApp ve sistem uyarıları köşe yerine adada görünür.
-- 🧰 **Araçlar:** klavyeyi veya fare ve trackpad'i kilitleme (temizlik için), Bluetooth, Wi-Fi, mikrofon, uyanık tut, karanlık mod, ekran görüntüsü. Hangilerinin görüneceğini ve sırasını Ayarlar'dan seçersin.
+- 🧰 **Araçlar:** temizlik modu (klavyeyi, fareyi ve trackpad'i birlikte kilitler), Bluetooth, Wi-Fi, mikrofon, uyanık tut, karanlık mod, ekran görüntüsü. Hangilerinin görüneceğini ve sırasını Ayarlar'dan seçersin.
 - 🔋 **Pil ve AirPods:** Şarj, düşük pil, kulaklık bağlandı.
 - 💻 **Çentik yok mu? Sorun değil.** Ekranın üstünde sanal bir ada belirir.
 - ⬆️ **Güncellemeler:** yeni sürüm çıkınca her pencerenin üstünde bir kart belirir, tek tıkla kurulur.
 
 Üzerine gelince ada genişler. Tıklayınca açılıp kapanır. Sol üstteki düğmelerle Müzik ve Araçlar arasında geçersin.
 
-**Temizlik için klavye kilidi:** Araçlar'ı aç, *Klavye kilidi*'ne bas ve rahatça sil. Açmak için <kbd>⌃</kbd><kbd>⌥</kbd><kbd>⌘</kbd><kbd>L</kbd> tuşlarına bas ya da adadaki *Kilidi aç* düğmesine tıkla. Güvenlik için kilit 2 dakika sonra kendiliğinden açılır (süre ayarlanabilir).
+**Temizlik modu:** Araçlar'ı aç, *Temizlik modu*'na bas ve rahatça sil: klavye, fare ve trackpad birlikte kilitlenir. Açmak için <kbd>⌃</kbd><kbd>⌥</kbd><kbd>⌘</kbd><kbd>L</kbd> tuşlarına bas. Güvenlik için kilit 2 dakika sonra kendiliğinden açılır (süre ayarlanabilir).
 
 <p align="center">
   <img src="docs/tools-notch.png" width="400">

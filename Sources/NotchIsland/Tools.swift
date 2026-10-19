@@ -6,14 +6,14 @@ import IOKit.pwr_mgt
 import SwiftUI
 
 enum ToolID: String, CaseIterable, Identifiable {
-    case keyboardLock, pointerLock, bluetooth, wifi, micMute, keepAwake, darkMode, screenshot
+    // Raw value kept as "keyboardLock" so saved tool order from 0.3 betas still applies.
+    case cleaningLock = "keyboardLock", bluetooth, wifi, micMute, keepAwake, darkMode, screenshot
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .keyboardLock: L.t("Klavye kilidi", "Lock keyboard")
-        case .pointerLock: L.t("Fare kilidi", "Lock pointer")
+        case .cleaningLock: L.t("Temizlik modu", "Cleaning mode")
         case .bluetooth: "Bluetooth"
         case .wifi: "Wi-Fi"
         case .micMute: L.t("Mikrofon", "Microphone")
@@ -26,8 +26,8 @@ enum ToolID: String, CaseIterable, Identifiable {
     /// Longer description for Settings.
     var detail: String {
         switch self {
-        case .keyboardLock: L.t("Temizlik için klavyeyi kapatır. Açmak için ⌃⌥⌘L.", "Disables the keyboard for cleaning. Press ⌃⌥⌘L to unlock.")
-        case .pointerLock: L.t("Fareyi ve trackpad'i kapatır. Açmak için ⌃⌥⌘L.", "Disables the mouse and trackpad. Press ⌃⌥⌘L to unlock.")
+        case .cleaningLock: L.t("Klavyeyi, fareyi ve trackpad'i birlikte kilitler. Açmak için ⌃⌥⌘L.",
+                                "Locks the keyboard, mouse and trackpad together. Press ⌃⌥⌘L to unlock.")
         case .bluetooth: L.t("Bluetooth'u açar veya kapatır.", "Turns Bluetooth on or off.")
         case .wifi: L.t("Wi-Fi'yi açar veya kapatır.", "Turns Wi-Fi on or off.")
         case .micMute: L.t("Varsayılan mikrofonu sessize alır.", "Mutes the default microphone.")
@@ -39,8 +39,7 @@ enum ToolID: String, CaseIterable, Identifiable {
 
     func symbol(active: Bool) -> String {
         switch self {
-        case .keyboardLock: active ? "lock.fill" : "keyboard"
-        case .pointerLock: active ? "lock.fill" : "cursorarrow"
+        case .cleaningLock: active ? "lock.fill" : "keyboard"
         case .bluetooth: "dot.radiowaves.left.and.right"
         case .wifi: active ? "wifi" : "wifi.slash"
         case .micMute: active ? "mic.slash.fill" : "mic.fill"
@@ -51,7 +50,7 @@ enum ToolID: String, CaseIterable, Identifiable {
     }
 
     /// Lock tools use the amber accent when active; everything else uses white.
-    var isLock: Bool { self == .keyboardLock || self == .pointerLock }
+    var isLock: Bool { self == .cleaningLock }
 
     static let defaultOrder: [ToolID] = allCases
 }
@@ -210,8 +209,7 @@ final class ToolsController: ObservableObject {
 
     func isActive(_ tool: ToolID) -> Bool {
         switch tool {
-        case .keyboardLock: lock?.keyboard == true
-        case .pointerLock: lock?.pointer == true
+        case .cleaningLock: lock != nil
         case .bluetooth: bluetoothOn == true
         case .wifi: wifiOn == true
         case .micMute: micMuted
@@ -233,8 +231,8 @@ final class ToolsController: ObservableObject {
 
     func perform(_ tool: ToolID) {
         switch tool {
-        case .keyboardLock: setLock(keyboard: !(lock?.keyboard ?? false), pointer: lock?.pointer ?? false)
-        case .pointerLock: setLock(keyboard: lock?.keyboard ?? false, pointer: !(lock?.pointer ?? false))
+        case .cleaningLock:
+            if lock == nil { setLock(keyboard: true, pointer: true) } else { unlockAll() }
         case .bluetooth: toggleBluetooth()
         case .wifi: toggleWiFi()
         case .micMute:

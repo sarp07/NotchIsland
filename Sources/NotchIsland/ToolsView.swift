@@ -148,7 +148,7 @@ struct LockedView: View {
 
     private var title: String {
         switch (lock.keyboard, lock.pointer) {
-        case (true, true): L.t("Klavye ve fare kilitli", "Keyboard and pointer locked")
+        case (true, true): L.t("Temizlik modu: klavye ve fare kilitli", "Cleaning mode: keyboard and pointer locked")
         case (true, false): L.t("Klavye kilitli", "Keyboard locked")
         default: L.t("Fare ve trackpad kilitli", "Mouse and trackpad locked")
         }
